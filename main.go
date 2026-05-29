@@ -1,8 +1,10 @@
+/*
+Copyright © 2026 NAME HERE <EMAIL ADDRESS>
+*/
 package main
 
-import "fmt"
+import "github.com/threetides/gonet/cmd"
 
 func main() {
-	fmt.Println("Hello, Gopher!")
-	fmt.Println("Let's Go!")
+	cmd.Execute()
 }
