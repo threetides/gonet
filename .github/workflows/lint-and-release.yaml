@@ -31,12 +31,15 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    outputs:
+      new_tag: ${{steps.push_tag.outputs.new_tag}}
     steps:
     - uses: actions/checkout@v6
       with:
         fetch-depth: '0'
 
     - name: Bump version and push tag
+      id: push_tag
       uses: anothrNick/github-tag-action@v1 
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
@@ -66,4 +69,6 @@ jobs:
           args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Warm the Go proxy
+        run: go install github.com/threetides/gonet@${{ needs.bump_version.outputs.new_tag }}
 
