@@ -18,6 +18,7 @@ jobs:
           version: v2.12
 
   bump_version:
+    needs: golangci
     name: Bump version
     runs-on: ubuntu-latest
     permissions:
