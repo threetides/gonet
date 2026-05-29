@@ -11,6 +11,16 @@ import (
 	"github.com/spf13/cobra"
 )
 
+func makeDir(name string) {
+	// Create root dir
+	err := os.Mkdir(name, 0755)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Printf("Created project %s\n", name)
+}
+
 // initCmd represents the init command
 var initCmd = &cobra.Command{
 	Use:   "init",
@@ -21,22 +31,21 @@ and usage of using your command. For example:
 Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
+	Args: cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		var projectName string
 
-		log.Print("Project name: ")
-		_, err := fmt.Scanln(&projectName)
-		if err != nil {
-			log.Fatal(err)
+		if len(args) == 1 {
+			makeDir(args[0])
+		} else {
+			fmt.Print("Project name: ")
+			_, err := fmt.Scanln(&projectName)
+			if err != nil {
+				log.Fatal(err)
+			}
+			makeDir(projectName)
 		}
 
-		// Create root dir
-		err = os.Mkdir(projectName, 0755)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		fmt.Printf("Created project %s\n", projectName)
 	},
 }
 
