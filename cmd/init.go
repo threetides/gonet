@@ -25,10 +25,13 @@ to quickly create a Cobra application.`,
 		var projectName string
 
 		log.Print("Project name: ")
-		fmt.Scanln(&projectName)
+		_, err := fmt.Scanln(&projectName)
+		if err != nil {
+			log.Fatal(err)
+		}
 
 		// Create root dir
-		err := os.Mkdir(projectName, 0755)
+		err = os.Mkdir(projectName, 0755)
 		if err != nil {
 			log.Fatal(err)
 		}
