@@ -2,6 +2,14 @@ name: Lint and release with Goreleaser
 
 on: 
   workflow_dispatch:
+    inputs:
+      bump:
+        type: choice
+        options:
+          - major
+          - minor
+          - patch
+        default: patch
 
 jobs: 
   golangci:
@@ -33,4 +41,5 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # if you don't want to set write permissions use a PAT token
         TAG_PREFIX: v
+        DEFAULT_BUMP: ${{github.event.inputs.bump}}
 
