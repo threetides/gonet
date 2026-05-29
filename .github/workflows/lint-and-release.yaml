@@ -1,0 +1,14 @@
+name: Lint and release with Goreleaser
+
+on: 
+  workflow_dispatch:
+
+jobs: 
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Lint
+        run: echo Hello, Gopher!
+
