@@ -7,4 +7,5 @@ func main() {
 	fmt.Println("First patch")
 	fmt.Println("Second patch")
 	fmt.Println("Third patch")
+	fmt.Println("Fourth patch")
 }
