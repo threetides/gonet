@@ -18,7 +18,7 @@ import (
 )
 
 type Project struct {
-	Name string
+	ModuleName string
 }
 
 func runCommand(dir string, args ...string) {
@@ -121,12 +121,12 @@ func initProject(projectName string) {
 	}
 
 	// Create files and populate with templates
-	createFile("main.go.tmpl", filepath.Join(dir, projectName, "/main.go"), Project{Name: projectName})
+	createFile("main.go.tmpl", filepath.Join(dir, projectName, "/main.go"), Project{ModuleName: moduleName})
 	createFile("helpers.go.tmpl", filepath.Join(dir, projectName, "/internal/httpx/helpers.go"), nil)
 	createFile("types.go.tmpl", filepath.Join(dir, projectName, "/internal/httpx/types.go"), nil)
 	createFile(".gitignore.tmpl", filepath.Join(dir, projectName, "/.gitignore"), nil)
 	createFile("makefile.tmpl", filepath.Join(dir, projectName, "/makefile"), nil)
-	_, err = os.Create(".env")
+	_, err = os.Create(filepath.Join(dir, projectName, ".gitignore"))
 	if err != nil {
 		log.Fatalln("❌ Error creating .env:", err)
 		return
