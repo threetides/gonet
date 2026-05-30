@@ -14,6 +14,7 @@ import (
 
 	"github.com/manifoldco/promptui"
 	"github.com/spf13/cobra"
+	"github.com/threetides/gonet/internal/templates"
 )
 
 func runCommand(dir string, args ...string) {
@@ -89,7 +90,7 @@ func initProject(projectName string) {
 	}
 
 	// Create files and populate with templates
-	tmpl, err := template.ParseFiles(filepath.Join(dir, "internal/templates/main.go.tmpl"))
+	tmpl, err := template.ParseFS(templates.TemplateFS, "main.go.tmpl")
 	if err != nil {
 		log.Fatalln("Failed to parse template:", err)
 	}
