@@ -36,7 +36,11 @@ to quickly create a Cobra application.`,
 		var projectName string
 
 		if len(args) == 1 {
-			makeDir(args[0])
+			if args[0] == "." {
+				fmt.Println("Making project in root")
+			} else {
+				makeDir(args[0])
+			}
 		} else {
 			fmt.Print("Project name: ")
 			_, err := fmt.Scanln(&projectName)
@@ -45,7 +49,6 @@ to quickly create a Cobra application.`,
 			}
 			makeDir(projectName)
 		}
-
 	},
 }
 
