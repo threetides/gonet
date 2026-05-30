@@ -9,6 +9,8 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"path/filepath"
+	"text/template"
 
 	"github.com/manifoldco/promptui"
 	"github.com/spf13/cobra"
@@ -24,17 +26,32 @@ func runCommand(dir string, args ...string) {
 
 	err := cmd.Run()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalln("Error running command:", err)
 	}
 }
 
-func initProject(dir string) {
-	// Create root dir
-	err := os.Mkdir(dir, 0755)
+func initProject() {
+	dir, err := os.Getwd()
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
-	fmt.Printf("Created directory %s\n", dir)
+
+	var projectName string
+
+	fmt.Print("Project name: ")
+	_, err = fmt.Scanln(&projectName)
+	if err != nil {
+		log.Fatalln("Error scanning response", err)
+	}
+
+	fmt.Println("Full path:", filepath.Join(dir, projectName))
+
+	// Create directories
+	err = os.MkdirAll(filepath.Join(dir, projectName, "internal/http"), 0755)
+	if err != nil {
+		log.Fatalln("Error creating directories:", err)
+	}
+	fmt.Println("Folder structure initialized")
 
 	// go mod init
 	var moduleName string
@@ -43,17 +60,17 @@ func initProject(dir string) {
 	if dir == "." {
 		fmt.Print("Module name: ")
 	} else {
-		fmt.Printf("Module name (press Enter to name it '%s'): ", dir)
+		fmt.Printf("Module name (press Enter to name it '%s'): ", projectName)
 	}
 	if scanner.Scan() {
 		if scanner.Text() == "" {
-			moduleName = dir
+			moduleName = projectName
 		} else {
 			moduleName = scanner.Text()
 		}
 	}
 
-	runCommand(dir, "go", "mod", "init", moduleName)
+	runCommand(filepath.Join(dir, projectName), "go", "mod", "init", moduleName)
 
 	// Init git repo
 	prompt := promptui.Select{
@@ -64,13 +81,34 @@ func initProject(dir string) {
 	_, result, err := prompt.Run()
 
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalln("Error initializing git repo:", err)
 		return
 	}
 
 	if result == "Yes" {
-		runCommand(dir, "git", "init")
+		runCommand(filepath.Join(dir, projectName), "git", "init")
 	}
+
+	// Create files and populate with templates
+	tmpl, err := template.ParseFiles(filepath.Join(dir, "internal/templates/main.go.tmpl"))
+	if err != nil {
+		log.Fatalln("Failed to parse template:", err)
+	}
+
+	// 3. Create or truncate the output file
+	outputFile, err := os.Create(filepath.Join(dir, projectName, "/main.go"))
+	if err != nil {
+		log.Fatalln("Failed to create output file:", err)
+	}
+	defer outputFile.Close() // Ensure file closes when main() finishes
+
+	// 4. Render the template directly into the file
+	err = tmpl.Execute(outputFile, nil)
+	if err != nil {
+		log.Fatalln("Failed to execute template:", err)
+	}
+
+	log.Println("Created main.go")
 }
 
 // initCmd represents the init command
@@ -80,23 +118,7 @@ var initCmd = &cobra.Command{
 	Long:  `Long`,
 	Args:  cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		var dir string
-
-		if len(args) == 1 {
-			if args[0] == "." {
-				fmt.Println("Making project in root")
-				initProject("")
-			} else {
-				initProject(args[0])
-			}
-		} else {
-			fmt.Print("Project name: ")
-			_, err := fmt.Scanln(&dir)
-			if err != nil {
-				log.Fatal(err)
-			}
-			initProject(dir)
-		}
+		initProject()
 	},
 }
 
