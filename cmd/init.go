@@ -117,6 +117,8 @@ func initProject(projectName string) {
 
 	// Create files and populate with templates
 	createFile("main.go.tmpl", filepath.Join(dir, projectName, "/main.go"))
+	createFile("helpers.go.tmpl", filepath.Join(dir, projectName, "/internal/httpx/helpers.go"))
+	createFile("types.go.tmpl", filepath.Join(dir, projectName, "/internal/httpx/types.go"))
 }
 
 // initCmd represents the init command
