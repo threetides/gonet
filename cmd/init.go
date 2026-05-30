@@ -119,6 +119,8 @@ func initProject(projectName string) {
 	createFile("main.go.tmpl", filepath.Join(dir, projectName, "/main.go"))
 	createFile("helpers.go.tmpl", filepath.Join(dir, projectName, "/internal/httpx/helpers.go"))
 	createFile("types.go.tmpl", filepath.Join(dir, projectName, "/internal/httpx/types.go"))
+	createFile(".gitignore.tmpl", filepath.Join(dir, projectName, "/.gitignore"))
+	createFile("makefile.tmpl", filepath.Join(dir, projectName, "/makefile"))
 }
 
 // initCmd represents the init command
