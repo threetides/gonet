@@ -4,6 +4,7 @@ Copyright © 2026 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"bufio"
 	"fmt"
 	"log"
 	"os"
@@ -22,21 +23,27 @@ func makeDir(name string) {
 	fmt.Printf("Created project %s\n", name)
 }
 
-func goModInit(name string) {
+func goModInit(dir string) {
+	var name string
+	scanner := bufio.NewScanner(os.Stdin)
+
 	fmt.Print("Module name: ")
-	_, err := fmt.Scanln(&name)
-	if err != nil {
-		log.Fatal(err)
+	if scanner.Scan() {
+		if scanner.Text() == "" {
+			name = dir
+		} else {
+			name = scanner.Text()
+		}
 	}
 
 	cmd := exec.Command("go", "mod", "init", name)
-	if name != "." {
-		cmd.Dir = name
+	if dir != "." {
+		cmd.Dir = dir
 	}
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 
-	err = cmd.Run()
+	err := cmd.Run()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -49,22 +56,24 @@ var initCmd = &cobra.Command{
 	Long:  `Long`,
 	Args:  cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		var projectName string
+		var dir string
 
 		if len(args) == 1 {
 			if args[0] == "." {
 				fmt.Println("Making project in root")
+				goModInit("")
 			} else {
 				makeDir(args[0])
+				goModInit(args[0])
 			}
 		} else {
 			fmt.Print("Project name: ")
-			_, err := fmt.Scanln(&projectName)
+			_, err := fmt.Scanln(&dir)
 			if err != nil {
 				log.Fatal(err)
 			}
-			makeDir(projectName)
-			goModInit("")
+			makeDir(dir)
+			goModInit(dir)
 		}
 	},
 }
