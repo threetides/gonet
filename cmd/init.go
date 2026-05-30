@@ -100,7 +100,11 @@ func initProject() {
 	if err != nil {
 		log.Fatalln("Failed to create output file:", err)
 	}
-	defer outputFile.Close() // Ensure file closes when main() finishes
+	defer func() {
+		if err := outputFile.Close(); err != nil {
+			log.Fatalln("Failed to close file:", err)
+		}
+	}()
 
 	// 4. Render the template directly into the file
 	err = tmpl.Execute(outputFile, nil)
