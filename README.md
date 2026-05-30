@@ -1,11 +1,10 @@
 # gonet
 
-Scaffold a Go HTTP service in seconds.
+A CLI that scaffolds a Go HTTP service.
 
-`gonet` is a small CLI that generates a ready-to-run Go HTTP project so you can
-skip the boilerplate and start writing handlers. One command gives you a
-standard folder layout, an initialized Go module, an optional git repository,
-and a tiny `httpx` package with a shared HTTP client and JSON helpers.
+`gonet` generates a Go HTTP project: a standard folder layout, an initialized
+Go module, an optional git repository, and an `httpx` package with a shared
+HTTP client and JSON helpers.
 
 ## Installation
 
@@ -72,13 +71,13 @@ my-service/
 
 ### The `httpx` package
 
-`internal/httpx` is a minimal toolkit for building JSON APIs:
+`internal/httpx` holds a few helpers for building JSON APIs:
 
-- **`Client`** — a shared `*http.Client` with a 30s timeout for outbound
+- **`Client`**: a shared `*http.Client` with a 30s timeout for outbound
   requests.
-- **`WriteJson(w, statusCode, message, data)`** — writes a JSON response using
-  a consistent envelope.
-- **`Response`** — the JSON envelope (`message` plus optional `data`).
+- **`WriteJson(w, statusCode, message, data)`**: writes a JSON response using a
+  consistent envelope.
+- **`Response`**: the JSON envelope (`message` plus optional `data`).
 
 Example handler:
 
