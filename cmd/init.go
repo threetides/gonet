@@ -1,5 +1,5 @@
 /*
-Copyright © 2026 NAME HERE <EMAIL ADDRESS>
+Copyright © 2026 NAME HERE hello@threetides.dev
 */
 package cmd
 
@@ -10,37 +10,12 @@ import (
 	"os"
 	"os/exec"
 
+	"github.com/manifoldco/promptui"
 	"github.com/spf13/cobra"
 )
 
-func makeDir(name string) {
-	// Create root dir
-	err := os.Mkdir(name, 0755)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Printf("Created project %s\n", name)
-}
-
-func goModInit(dir string) {
-	var name string
-	scanner := bufio.NewScanner(os.Stdin)
-
-	if dir == "." {
-		fmt.Print("Module name: ")
-	} else {
-		fmt.Printf("Module name (press Enter to name it '%s'): ", dir)
-	}
-	if scanner.Scan() {
-		if scanner.Text() == "" {
-			name = dir
-		} else {
-			name = scanner.Text()
-		}
-	}
-
-	cmd := exec.Command("go", "mod", "init", name)
+func runCommand(dir string, args ...string) {
+	cmd := exec.Command(args[0], args[1:]...)
 	if dir != "." {
 		cmd.Dir = dir
 	}
@@ -50,6 +25,51 @@ func goModInit(dir string) {
 	err := cmd.Run()
 	if err != nil {
 		log.Fatal(err)
+	}
+}
+
+func initProject(dir string) {
+	// Create root dir
+	err := os.Mkdir(dir, 0755)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("Created directory %s\n", dir)
+
+	// go mod init
+	var moduleName string
+	scanner := bufio.NewScanner(os.Stdin)
+
+	if dir == "." {
+		fmt.Print("Module name: ")
+	} else {
+		fmt.Printf("Module name (press Enter to name it '%s'): ", dir)
+	}
+	if scanner.Scan() {
+		if scanner.Text() == "" {
+			moduleName = dir
+		} else {
+			moduleName = scanner.Text()
+		}
+	}
+
+	runCommand(dir, "go", "mod", "init", moduleName)
+
+	// Init git repo
+	prompt := promptui.Select{
+		Label: "Initialize git repository?",
+		Items: []string{"Yes", "No"},
+	}
+
+	_, result, err := prompt.Run()
+
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+
+	if result == "Yes" {
+		runCommand(dir, "git", "init")
 	}
 }
 
@@ -65,10 +85,9 @@ var initCmd = &cobra.Command{
 		if len(args) == 1 {
 			if args[0] == "." {
 				fmt.Println("Making project in root")
-				goModInit("")
+				initProject("")
 			} else {
-				makeDir(args[0])
-				goModInit(args[0])
+				initProject(args[0])
 			}
 		} else {
 			fmt.Print("Project name: ")
@@ -76,8 +95,7 @@ var initCmd = &cobra.Command{
 			if err != nil {
 				log.Fatal(err)
 			}
-			makeDir(dir)
-			goModInit(dir)
+			initProject(dir)
 		}
 	},
 }
