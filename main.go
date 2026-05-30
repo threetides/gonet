@@ -1,6 +1,3 @@
-/*
-Copyright © 2026 threetides.dev hello@threetides.dev
-*/
 package main
 
 import (
