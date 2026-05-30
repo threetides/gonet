@@ -75,7 +75,7 @@ func initProject(projectName string) {
 
 	// Ask for project name if not provided with args
 	if len(projectName) == 0 {
-		fmt.Print(blue("enter project name:"))
+		fmt.Print("enter project name: ")
 		_, err = fmt.Scanln(&projectName)
 		if err != nil {
 			log.Fatalln(red("error:"), cyan("error scanning response:"), err)
@@ -94,7 +94,7 @@ func initProject(projectName string) {
 	scanner := bufio.NewScanner(os.Stdin)
 
 	if projectName == "." {
-		fmt.Print("enter module name:")
+		fmt.Print("enter module name: ")
 	} else {
 		fmt.Printf("enter module name (press enter to leave it as '%s'):", projectName)
 	}
