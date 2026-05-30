@@ -27,7 +27,11 @@ func goModInit(dir string) {
 	var name string
 	scanner := bufio.NewScanner(os.Stdin)
 
-	fmt.Print("Module name: ")
+	if dir == "." {
+		fmt.Print("Module name: ")
+	} else {
+		fmt.Printf("Module name (press Enter to name it '%s'): ", dir)
+	}
 	if scanner.Scan() {
 		if scanner.Text() == "" {
 			name = dir
