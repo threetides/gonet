@@ -4,13 +4,19 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"templates/internal/httpx"
 
-	"github.com/threetides/test/internal/httpx"
+	"github.com/joho/godotenv"
 )
 
 const port = 8080
 
 func main() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatalf("Error loading .env file: %v\n", err)
+	}
+
 	mux := http.NewServeMux()
 
 	// Health

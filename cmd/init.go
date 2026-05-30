@@ -97,6 +97,7 @@ func initProject(projectName string) {
 	}
 
 	runCommand(filepath.Join(dir, projectName), "go", "mod", "init", moduleName)
+	runCommand(filepath.Join(dir, projectName), "go", "get", "github.com/joho/godotenv")
 
 	// Init git repo
 	prompt := promptui.Select{
@@ -121,6 +122,11 @@ func initProject(projectName string) {
 	createFile("types.go.tmpl", filepath.Join(dir, projectName, "/internal/httpx/types.go"))
 	createFile(".gitignore.tmpl", filepath.Join(dir, projectName, "/.gitignore"))
 	createFile("makefile.tmpl", filepath.Join(dir, projectName, "/makefile"))
+	_, err = os.Create(".env")
+	if err != nil {
+		log.Fatalln("❌ Error creating .env:", err)
+		return
+	}
 }
 
 // initCmd represents the init command
