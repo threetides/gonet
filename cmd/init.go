@@ -30,21 +30,20 @@ func runCommand(dir string, args ...string) {
 	}
 }
 
-func initProject() {
+func initProject(projectName string) {
 	dir, err := os.Getwd()
 	if err != nil {
 		log.Println(err)
 	}
 
-	var projectName string
-
-	fmt.Print("Project name: ")
-	_, err = fmt.Scanln(&projectName)
-	if err != nil {
-		log.Fatalln("Error scanning response", err)
+	// Ask for project name if not provided with args
+	if len(projectName) == 0 {
+		fmt.Print("Project name: ")
+		_, err = fmt.Scanln(&projectName)
+		if err != nil {
+			log.Fatalln("Error scanning response", err)
+		}
 	}
-
-	fmt.Println("Full path:", filepath.Join(dir, projectName))
 
 	// Create directories
 	err = os.MkdirAll(filepath.Join(dir, projectName, "internal/http"), 0755)
@@ -57,7 +56,7 @@ func initProject() {
 	var moduleName string
 	scanner := bufio.NewScanner(os.Stdin)
 
-	if dir == "." {
+	if projectName == "." {
 		fmt.Print("Module name: ")
 	} else {
 		fmt.Printf("Module name (press Enter to name it '%s'): ", projectName)
@@ -122,7 +121,11 @@ var initCmd = &cobra.Command{
 	Long:  `Long`,
 	Args:  cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		initProject()
+		if len(args) == 1 {
+			initProject(args[0])
+		} else {
+			initProject("")
+		}
 	},
 }
 
