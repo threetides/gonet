@@ -17,6 +17,10 @@ import (
 	"github.com/threetides/gonet/internal/templates"
 )
 
+type Project struct {
+	Name string
+}
+
 func runCommand(dir string, args ...string) {
 	cmd := exec.Command(args[0], args[1:]...)
 	if dir != "." {
@@ -31,7 +35,7 @@ func runCommand(dir string, args ...string) {
 	}
 }
 
-func createFile(t string, filepath string) {
+func createFile(t string, filepath string, s any) {
 	tmpl, err := template.ParseFS(templates.TemplateFS, t)
 	if err != nil {
 		log.Fatalln("Failed to parse template:", err)
@@ -49,7 +53,7 @@ func createFile(t string, filepath string) {
 	}()
 
 	// 4. Render the template directly into the file
-	err = tmpl.Execute(outputFile, nil)
+	err = tmpl.Execute(outputFile, s)
 	if err != nil {
 		log.Fatalln("Failed to execute template:", err)
 	}
@@ -117,11 +121,11 @@ func initProject(projectName string) {
 	}
 
 	// Create files and populate with templates
-	createFile("main.go.tmpl", filepath.Join(dir, projectName, "/main.go"))
-	createFile("helpers.go.tmpl", filepath.Join(dir, projectName, "/internal/httpx/helpers.go"))
-	createFile("types.go.tmpl", filepath.Join(dir, projectName, "/internal/httpx/types.go"))
-	createFile(".gitignore.tmpl", filepath.Join(dir, projectName, "/.gitignore"))
-	createFile("makefile.tmpl", filepath.Join(dir, projectName, "/makefile"))
+	createFile("main.go.tmpl", filepath.Join(dir, projectName, "/main.go"), Project{Name: projectName})
+	createFile("helpers.go.tmpl", filepath.Join(dir, projectName, "/internal/httpx/helpers.go"), nil)
+	createFile("types.go.tmpl", filepath.Join(dir, projectName, "/internal/httpx/types.go"), nil)
+	createFile(".gitignore.tmpl", filepath.Join(dir, projectName, "/.gitignore"), nil)
+	createFile("makefile.tmpl", filepath.Join(dir, projectName, "/makefile"), nil)
 	_, err = os.Create(".env")
 	if err != nil {
 		log.Fatalln("❌ Error creating .env:", err)
