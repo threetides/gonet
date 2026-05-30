@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"os/exec"
 
 	"github.com/spf13/cobra"
 )
@@ -21,17 +22,32 @@ func makeDir(name string) {
 	fmt.Printf("Created project %s\n", name)
 }
 
+func goModInit(name string) {
+	fmt.Print("Module name: ")
+	_, err := fmt.Scanln(&name)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	cmd := exec.Command("go", "mod", "init", name)
+	if name != "." {
+		cmd.Dir = name
+	}
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
+	err = cmd.Run()
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
 // initCmd represents the init command
 var initCmd = &cobra.Command{
 	Use:   "init",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
-	Args: cobra.MaximumNArgs(1),
+	Short: "Short",
+	Long:  `Long`,
+	Args:  cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		var projectName string
 
@@ -48,6 +64,7 @@ to quickly create a Cobra application.`,
 				log.Fatal(err)
 			}
 			makeDir(projectName)
+			goModInit("")
 		}
 	},
 }
