@@ -126,7 +126,7 @@ func initProject(projectName string) {
 	createFile("types.go.tmpl", filepath.Join(dir, projectName, "/internal/httpx/types.go"), nil)
 	createFile(".gitignore.tmpl", filepath.Join(dir, projectName, "/.gitignore"), nil)
 	createFile("makefile.tmpl", filepath.Join(dir, projectName, "/makefile"), nil)
-	_, err = os.Create(filepath.Join(dir, projectName, ".gitignore"))
+	_, err = os.Create(filepath.Join(dir, projectName, ".env"))
 	if err != nil {
 		log.Fatalln("❌ Error creating .env:", err)
 		return
