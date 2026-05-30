@@ -1,7 +1,22 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"log"
+	"net/http"
+	"templates/internal/httpx"
+)
+
+const port = 8080
 
 func main() {
-	fmt.Println("Hello, Gopher!")
+	mux := http.NewServeMux()
+
+	// Health
+	mux.HandleFunc("GET /api/health", func(w http.ResponseWriter, r *http.Request) {
+		httpx.WriteJson(w, http.StatusOK, "Healthy", nil)
+	})
+
+	fmt.Println("Server started on port", port)
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%v", port), mux))
 }

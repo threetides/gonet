@@ -27,8 +27,34 @@ func runCommand(dir string, args ...string) {
 
 	err := cmd.Run()
 	if err != nil {
-		log.Fatalln("Error running command:", err)
+		log.Fatalln("❌ Error running command:", err)
 	}
+}
+
+func createFile(t string, filepath string) {
+	tmpl, err := template.ParseFS(templates.TemplateFS, t)
+	if err != nil {
+		log.Fatalln("Failed to parse template:", err)
+	}
+
+	// 3. Create or truncate the output file
+	outputFile, err := os.Create(filepath)
+	if err != nil {
+		log.Fatalln("Failed to create output file:", err)
+	}
+	defer func() {
+		if err := outputFile.Close(); err != nil {
+			log.Fatalln("Failed to close file:", err)
+		}
+	}()
+
+	// 4. Render the template directly into the file
+	err = tmpl.Execute(outputFile, nil)
+	if err != nil {
+		log.Fatalln("Failed to execute template:", err)
+	}
+
+	fmt.Printf("✅ Created %s\n", filepath)
 }
 
 func initProject(projectName string) {
@@ -42,16 +68,16 @@ func initProject(projectName string) {
 		fmt.Print("Project name: ")
 		_, err = fmt.Scanln(&projectName)
 		if err != nil {
-			log.Fatalln("Error scanning response", err)
+			log.Fatalln("❌ Error scanning response", err)
 		}
 	}
 
 	// Create directories
-	err = os.MkdirAll(filepath.Join(dir, projectName, "internal/http"), 0755)
+	err = os.MkdirAll(filepath.Join(dir, projectName, "internal/httpx"), 0755)
 	if err != nil {
-		log.Fatalln("Error creating directories:", err)
+		log.Fatalln("❌ Error creating directories:", err)
 	}
-	fmt.Println("Folder structure initialized")
+	fmt.Println("✅ Folder structure initialized")
 
 	// go mod init
 	var moduleName string
@@ -81,7 +107,7 @@ func initProject(projectName string) {
 	_, result, err := prompt.Run()
 
 	if err != nil {
-		log.Fatalln("Error initializing git repo:", err)
+		log.Fatalln("❌ Error initializing git repo:", err)
 		return
 	}
 
@@ -90,29 +116,7 @@ func initProject(projectName string) {
 	}
 
 	// Create files and populate with templates
-	tmpl, err := template.ParseFS(templates.TemplateFS, "main.go.tmpl")
-	if err != nil {
-		log.Fatalln("Failed to parse template:", err)
-	}
-
-	// 3. Create or truncate the output file
-	outputFile, err := os.Create(filepath.Join(dir, projectName, "/main.go"))
-	if err != nil {
-		log.Fatalln("Failed to create output file:", err)
-	}
-	defer func() {
-		if err := outputFile.Close(); err != nil {
-			log.Fatalln("Failed to close file:", err)
-		}
-	}()
-
-	// 4. Render the template directly into the file
-	err = tmpl.Execute(outputFile, nil)
-	if err != nil {
-		log.Fatalln("Failed to execute template:", err)
-	}
-
-	log.Println("Created main.go")
+	createFile("main.go.tmpl", filepath.Join(dir, projectName, "/main.go"))
 }
 
 // initCmd represents the init command
