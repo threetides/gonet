@@ -140,7 +140,7 @@ func initProject(projectName string) {
 
 	fmt.Println(green("success:"), cyan("successfully initialized ", projectName, "!"))
 
-	if projectName == "" {
+	if projectName == "." {
 		fmt.Println("gonet:", cyan("run 'go run main.go' or 'make dev' to get started"))
 	} else {
 		fmt.Println("gonet:", cyan("run cd"), cyan(projectName), cyan("&& 'go run main.go' or 'make dev' to get started"))
