@@ -14,7 +14,7 @@ var rootCmd = &cobra.Command{
 
 It generates a ready-to-run project: a standard folder layout, an
 initialized Go module, an optional git repository, and a small httpx
-package with a shared HTTP client and JSON helpers — so you can skip the
+package with a shared HTTP client and JSON helpers, so you can skip the
 boilerplate and start writing handlers.
 
 Get started with:
