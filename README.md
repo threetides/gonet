@@ -61,7 +61,7 @@ my-service/
 ├── internal/
 │   └── httpx/
 │       ├── client.go        # shared *http.Client (30s timeout)
-│       ├── helpers.go       # WriteJson helper
+│       ├── helpers.go       # WriteJSON helper
 │       └── types.go         # standard JSON Response type
 ├── makefile                 # `make dev` runs the linter and the server
 ├── .gitignore
@@ -75,7 +75,7 @@ my-service/
 
 - **`Client`**: a shared `*http.Client` with a 30s timeout for outbound
   requests.
-- **`WriteJson(w, statusCode, message, data)`**: writes a JSON response using a
+- **`WriteJSON(w, statusCode, message, data)`**: writes a JSON response using a
   consistent envelope.
 - **`Response`**: the JSON envelope (`message` plus optional `data`).
 
@@ -83,7 +83,7 @@ Example handler:
 
 ```go
 mux.HandleFunc("GET /api/hello", func(w http.ResponseWriter, r *http.Request) {
-    httpx.WriteJson(w, http.StatusOK, "Hello", map[string]string{"name": "world"})
+    httpx.WriteJSON(w, http.StatusOK, "Hello", map[string]string{"name": "world"})
 })
 ```
 

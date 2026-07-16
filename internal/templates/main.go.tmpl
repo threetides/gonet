@@ -14,14 +14,14 @@ const port = 8080
 func main() {
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatalf("Error loading .env file: %v\n", err)
+		log.Println("No .env file found; using system environment variables")
 	}
 
 	mux := http.NewServeMux()
 
 	// Health
 	mux.HandleFunc("GET /api/health", func(w http.ResponseWriter, r *http.Request) {
-		httpx.WriteJson(w, http.StatusOK, "Healthy", nil)
+		httpx.WriteJSON(w, http.StatusOK, "Healthy", nil)
 	})
 
 	fmt.Println("Server started on port", port)
