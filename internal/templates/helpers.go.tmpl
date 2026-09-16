@@ -2,18 +2,29 @@ package httpx
 
 import (
 	"encoding/json"
+	"errors"
 	"log"
 	"net/http"
+
+	"{{ .ModuleName }}/internal/apperr"
 )
 
 func WriteJSON(w http.ResponseWriter, statusCode int, message string, data any) {
-	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("content-type", "application/json")
 	w.WriteHeader(statusCode)
 
-	if err := json.NewEncoder(w).Encode(Response{
-		Message: message,
-		Data:    data,
-	}); err != nil {
-		log.Println("Error encoding json:", err)
+	if err := json.NewEncoder(w).Encode(Response{Message: message, Data: data}); err != nil {
+		log.Println("error encoding json:", err)
 	}
+}
+
+func WriteError(w http.ResponseWriter, r *http.Request, e error) {
+	appErr, ok := errors.AsType[*apperr.Apperr](e)
+	if !ok || appErr.Kind == apperr.KindInternalServerError {
+		log.Printf("%s: %v", r.URL.Path, e)
+		WriteJSON(w, http.StatusInternalServerError, "internal server error", nil)
+		return
+	}
+
+	WriteJSON(w, appErr.Kind.HTTPStatus(), appErr.Message, appErr.Data)
 }

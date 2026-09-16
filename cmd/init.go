@@ -79,9 +79,11 @@ func initProject(projectName string) {
 	}
 
 	// Create directories
-	err = os.MkdirAll(filepath.Join(dir, projectName, "internal/httpx"), 0755)
-	if err != nil {
-		log.Fatalln(red("error:"), cyan("error creating directories:"), err)
+	for _, sub := range []string{"internal/apperr", "internal/httpx"} {
+		err = os.MkdirAll(filepath.Join(dir, projectName, sub), 0755)
+		if err != nil {
+			log.Fatalln(red("error:"), cyan("error creating directories:"), err)
+		}
 	}
 	fmt.Println("gonet: folder structure initialized")
 
@@ -123,17 +125,15 @@ func initProject(projectName string) {
 	}
 
 	// Create files and populate with templates
-	createFile("main.go.tmpl", filepath.Join(dir, projectName, "/main.go"), Project{ModuleName: moduleName})
-	createFile("helpers.go.tmpl", filepath.Join(dir, projectName, "/internal/httpx/helpers.go"), nil)
+	project := Project{ModuleName: moduleName}
+	createFile("main.go.tmpl", filepath.Join(dir, projectName, "/main.go"), project)
+	createFile("apperr.go.tmpl", filepath.Join(dir, projectName, "/internal/apperr/apperr.go"), nil)
+	createFile("helpers.go.tmpl", filepath.Join(dir, projectName, "/internal/httpx/helpers.go"), project)
 	createFile("types.go.tmpl", filepath.Join(dir, projectName, "/internal/httpx/types.go"), nil)
 	createFile("client.go.tmpl", filepath.Join(dir, projectName, "/internal/httpx/client.go"), nil)
 	createFile(".gitignore.tmpl", filepath.Join(dir, projectName, "/.gitignore"), nil)
+	createFile(".env.tmpl", filepath.Join(dir, projectName, "/.env"), nil)
 	createFile("makefile.tmpl", filepath.Join(dir, projectName, "/makefile"), nil)
-	_, err = os.Create(filepath.Join(dir, projectName, ".env"))
-	if err != nil {
-		log.Fatalln(red("error:"), cyan("error creating .env:"), err)
-		return
-	}
 
 	fmt.Println(green("success:"), cyan("successfully initialized ", projectName, "!"))
 
@@ -156,7 +156,8 @@ prompted for one.
 
 The command creates the folder structure, initializes a Go module,
 optionally sets up a git repository, and generates the starter files
-(main.go, the internal/httpx package, makefile, .gitignore and .env).
+(main.go, the internal/apperr and internal/httpx packages, makefile,
+.gitignore and .env).
 
 Examples:
   gonet init my-service   # create ./my-service

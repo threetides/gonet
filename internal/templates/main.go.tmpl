@@ -4,26 +4,28 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
-	"github.com/joho/godotenv"
 	"{{ .ModuleName }}/internal/httpx"
+	"github.com/joho/godotenv"
 )
 
-const port = 8080
-
 func main() {
+	// * Load .env file
 	err := godotenv.Load()
 	if err != nil {
-		log.Println("No .env file found; using system environment variables")
+		log.Println("failed to load .env file. falling back to system environment variables.")
 	}
 
+	var port = os.Getenv("PORT")
 	mux := http.NewServeMux()
 
-	// Health
+	// * Health
 	mux.HandleFunc("GET /api/health", func(w http.ResponseWriter, r *http.Request) {
-		httpx.WriteJSON(w, http.StatusOK, "Healthy", nil)
+		httpx.WriteJSON(w, http.StatusOK, "healthy", nil)
 	})
 
-	fmt.Println("Server started on port", port)
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%v", port), mux))
+	// * Start the server
+	log.Println("server started on port", port)
+	log.Fatal(http.ListenAndServe(fmt.Sprintf("127.0.0.1:%s", port), mux))
 }
